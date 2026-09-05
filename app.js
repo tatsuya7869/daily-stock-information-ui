@@ -1,5 +1,32 @@
 const API_BASE = "https://sjnsxrsqitceunvkljoj.supabase.co/functions/v1/admin-api";
 const GITHUB_ACTIONS_URL = "https://github.com/tatsuya7869/daily-stock-information/actions";
+const TOKEN_STORAGE_KEY = "adminToken";
+
+// 認証はCookieではなく Authorization: Bearer ヘッダー + localStorage のトークンで行う。
+// UI(GitHub Pages)とAPI(Supabase)がドメインの異なる「クロスサイト」構成のため、
+// クロスサイトCookieをブラウザ側でブロックされると（一部モバイルブラウザのデフォルト動作）
+// Cookie方式では認証が機能しなくなる問題があった。ヘッダー方式はこの制限を受けない。
+
+function getToken() {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function setToken(token) {
+  try {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  } catch {
+    // localStorageが使えない環境ではログイン状態を保持できないが、動作は継続する
+  }
+}
+
+function authHeaders() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 const loginScreen = document.getElementById("loginScreen");
 const loginForm = document.getElementById("loginForm");
@@ -34,7 +61,7 @@ function setButtonsDisabled(disabled) {
 }
 
 async function loadArticles() {
-  const res = await fetch(`${API_BASE}/articles`, { credentials: "include" });
+  const res = await fetch(`${API_BASE}/articles`, { headers: authHeaders() });
   const items = await res.json();
   articlesTableBody.innerHTML = "";
   for (const item of items) {
@@ -50,7 +77,7 @@ async function loadArticles() {
 }
 
 async function loadScripts() {
-  const res = await fetch(`${API_BASE}/scripts`, { credentials: "include" });
+  const res = await fetch(`${API_BASE}/scripts`, { headers: authHeaders() });
   const items = await res.json();
   scriptsTableBody.innerHTML = "";
   for (const item of items) {
@@ -68,7 +95,7 @@ async function loadScripts() {
 }
 
 async function loadEpisodes() {
-  const res = await fetch(`${API_BASE}/episodes`, { credentials: "include" });
+  const res = await fetch(`${API_BASE}/episodes`, { headers: authHeaders() });
   const items = await res.json();
   episodesTableBody.innerHTML = "";
   for (const item of items) {
@@ -100,7 +127,7 @@ runBtns.forEach((btn) => {
 
     let res;
     try {
-      res = await fetch(`${API_BASE}/${action}`, { method: "POST", credentials: "include" });
+      res = await fetch(`${API_BASE}/${action}`, { method: "POST", headers: authHeaders() });
     } catch (err) {
       runStatus.textContent = `接続できませんでした（${err.message}）`;
       setButtonsDisabled(false);
@@ -151,7 +178,6 @@ loginForm.addEventListener("submit", async (event) => {
   try {
     res = await fetch(`${API_BASE}/login`, {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password: passwordInput.value }),
     });
@@ -168,12 +194,18 @@ loginForm.addEventListener("submit", async (event) => {
     return;
   }
 
+  const body = await res.json();
+  setToken(body.token);
   showApp();
 });
 
 (async function checkSession() {
+  if (!getToken()) {
+    showLogin();
+    return;
+  }
   try {
-    const res = await fetch(`${API_BASE}/session`, { credentials: "include" });
+    const res = await fetch(`${API_BASE}/session`, { headers: authHeaders() });
     if (res.ok) {
       showApp();
       return;
