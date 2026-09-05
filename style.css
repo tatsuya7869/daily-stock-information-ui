@@ -1,0 +1,157 @@
+:root {
+  color-scheme: light dark;
+  --fg: #1a1a1a;
+  --bg: #ffffff;
+  --border: #d8d8d8;
+  --accent: #2f6fed;
+  --muted: #666;
+  --error: #c0392b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e8e8e8;
+    --bg: #16181c;
+    --border: #3a3d42;
+    --muted: #9aa0a6;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  margin: 0;
+  padding: 0 1rem 3rem;
+  font-size: 16px;
+}
+
+header {
+  padding: 1.25rem 0 1rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.25rem;
+}
+
+h1 { font-size: 1.15rem; margin: 0 0 0.25rem; line-height: 1.4; }
+.sub { color: var(--muted); margin: 0; font-size: 0.85rem; }
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+h2 { font-size: 1rem; margin-top: 0; }
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 0.75rem; }
+
+.step-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.step-buttons button { width: 100%; }
+
+.run-status {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.log-area {
+  margin-top: 0.75rem;
+  background: rgba(127,127,127,0.08);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.refresh-btn { width: 100%; margin-bottom: 0.25rem; }
+
+.table-scroll {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.85rem; }
+th, td { text-align: left; padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; }
+td.path-cell { white-space: normal; word-break: break-all; }
+audio { max-width: 240px; width: 100%; }
+.path-cell { font-size: 0.75rem; color: var(--muted); word-break: break-all; }
+
+/* スマホ幅では保存先（ローカルパス）列を隠し、再生ボタン等の表示領域を優先する */
+@media (max-width: 639px) {
+  .path-col, .path-cell { display: none; }
+  table { min-width: 0; }
+}
+
+/* ログイン画面 */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+/* [hidden]属性はUAスタイルシートのdisplay:noneより、上のdisplay:flex指定の方が
+   author stylesheetとして優先されてしまうため、明示的に上書きする */
+.login-screen[hidden],
+.app-root[hidden] {
+  display: none;
+}
+.login-card {
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.login-card h1 { font-size: 1.1rem; margin: 0; }
+.login-card input {
+  font-size: 1rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 44px;
+}
+.login-error { color: var(--error); font-size: 0.85rem; margin: 0; }
+
+/* 画面が広い場合はボタンを横並びに戻す */
+@media (min-width: 640px) {
+  body { padding: 0 1.5rem 3rem; }
+  h1 { font-size: 1.3rem; }
+  .step-buttons { flex-direction: row; flex-wrap: wrap; }
+  .step-buttons button { width: auto; }
+  .refresh-btn { width: auto; }
+  table { min-width: 0; }
+}
