@@ -60,18 +60,27 @@ function setButtonsDisabled(disabled) {
   });
 }
 
+// バックエンド由来の文字列(ファイル名等)をinnerHTMLへ直接埋め込まず、
+// textContent経由でDOMに設定する（将来的に外部由来の文字列を表示するようになった場合の
+// クロスサイトスクリプティング対策。現状のファイル名は自システムが生成したものだが念のため）。
+function td(text) {
+  const cell = document.createElement("td");
+  cell.textContent = text ?? "-";
+  return cell;
+}
+
 async function loadArticles() {
   const res = await fetch(`${API_BASE}/articles`, { headers: authHeaders() });
   const items = await res.json();
   articlesTableBody.innerHTML = "";
   for (const item of items) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${formatDateTime(item.createdAt)}</td>
-      <td>${item.articleCount ?? "-"}</td>
-      <td>${formatBytes(item.sizeBytes)}</td>
-      <td class="path-cell">${item.articlesFile}</td>
-    `;
+    tr.appendChild(td(formatDateTime(item.createdAt)));
+    tr.appendChild(td(item.articleCount));
+    tr.appendChild(td(formatBytes(item.sizeBytes)));
+    const pathCell = td(item.articlesFile);
+    pathCell.classList.add("path-cell");
+    tr.appendChild(pathCell);
     articlesTableBody.appendChild(tr);
   }
 }
@@ -82,14 +91,14 @@ async function loadScripts() {
   scriptsTableBody.innerHTML = "";
   for (const item of items) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${formatDateTime(item.createdAt)}</td>
-      <td>${item.mode ?? "-"}</td>
-      <td>${item.articleCount ?? "-"}</td>
-      <td>${item.lineCount ?? "-"}</td>
-      <td>${formatBytes(item.sizeBytes)}</td>
-      <td class="path-cell">${item.scriptFile}</td>
-    `;
+    tr.appendChild(td(formatDateTime(item.createdAt)));
+    tr.appendChild(td(item.mode));
+    tr.appendChild(td(item.articleCount));
+    tr.appendChild(td(item.lineCount));
+    tr.appendChild(td(formatBytes(item.sizeBytes)));
+    const pathCell = td(item.scriptFile);
+    pathCell.classList.add("path-cell");
+    tr.appendChild(pathCell);
     scriptsTableBody.appendChild(tr);
   }
 }
@@ -100,15 +109,23 @@ async function loadEpisodes() {
   episodesTableBody.innerHTML = "";
   for (const item of items) {
     const tr = document.createElement("tr");
-    const player = item.audioUrl
-      ? `<audio controls src="${item.audioUrl}"></audio>`
-      : "再生URLの発行に失敗しました";
-    tr.innerHTML = `
-      <td>${formatDateTime(item.createdAt)}</td>
-      <td>${formatBytes(item.sizeBytes)}</td>
-      <td>${player}</td>
-      <td class="path-cell">${item.audioFile}</td>
-    `;
+    tr.appendChild(td(formatDateTime(item.createdAt)));
+    tr.appendChild(td(formatBytes(item.sizeBytes)));
+
+    const playerCell = document.createElement("td");
+    if (item.audioUrl) {
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.src = item.audioUrl;
+      playerCell.appendChild(audio);
+    } else {
+      playerCell.textContent = "再生URLの発行に失敗しました";
+    }
+    tr.appendChild(playerCell);
+
+    const pathCell = td(item.audioFile);
+    pathCell.classList.add("path-cell");
+    tr.appendChild(pathCell);
     episodesTableBody.appendChild(tr);
   }
 }
