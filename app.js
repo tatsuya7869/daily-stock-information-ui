@@ -44,6 +44,44 @@ const articlesTableBody = document.querySelector("#articlesTable tbody");
 const scriptsTableBody = document.querySelector("#scriptsTable tbody");
 const episodesTableBody = document.querySelector("#episodesTable tbody");
 
+// 一覧が増えるほど画面が煩雑になるため、既定では直近N件だけ表示し、
+// 「もっと見る」を押したときだけ全件表示する（古い記録もGitHub Releaseに
+// アーカイブ済みなので、普段の操作では直近分だけ見えれば十分という判断）。
+const LIST_PREVIEW_COUNT = 10;
+const showMoreBtns = document.querySelectorAll(".show-more-btn[data-target]");
+// target -> { items: 全件, expanded: 全件表示中か }
+const listState = {
+  articles: { items: [], expanded: false },
+  scripts: { items: [], expanded: false },
+  episodes: { items: [], expanded: false },
+};
+
+function updateShowMoreBtn(target) {
+  const btn = document.querySelector(`.show-more-btn[data-target="${target}"]`);
+  const state = listState[target];
+  if (!btn || !state) return;
+  if (state.items.length <= LIST_PREVIEW_COUNT) {
+    btn.hidden = true;
+    return;
+  }
+  btn.hidden = false;
+  btn.textContent = state.expanded
+    ? "表示を減らす"
+    : `もっと見る（全${state.items.length}件中${LIST_PREVIEW_COUNT}件を表示中）`;
+}
+
+showMoreBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.target;
+    const state = listState[target];
+    if (!state) return;
+    state.expanded = !state.expanded;
+    if (target === "articles") renderArticles();
+    if (target === "scripts") renderScripts();
+    if (target === "episodes") renderEpisodes();
+  });
+});
+
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -69,9 +107,9 @@ function td(text) {
   return cell;
 }
 
-async function loadArticles() {
-  const res = await fetch(`${API_BASE}/articles`, { headers: authHeaders() });
-  const items = await res.json();
+function renderArticles() {
+  const state = listState.articles;
+  const items = state.expanded ? state.items : state.items.slice(0, LIST_PREVIEW_COUNT);
   articlesTableBody.innerHTML = "";
   for (const item of items) {
     const tr = document.createElement("tr");
@@ -83,11 +121,12 @@ async function loadArticles() {
     tr.appendChild(pathCell);
     articlesTableBody.appendChild(tr);
   }
+  updateShowMoreBtn("articles");
 }
 
-async function loadScripts() {
-  const res = await fetch(`${API_BASE}/scripts`, { headers: authHeaders() });
-  const items = await res.json();
+function renderScripts() {
+  const state = listState.scripts;
+  const items = state.expanded ? state.items : state.items.slice(0, LIST_PREVIEW_COUNT);
   scriptsTableBody.innerHTML = "";
   for (const item of items) {
     const tr = document.createElement("tr");
@@ -101,11 +140,12 @@ async function loadScripts() {
     tr.appendChild(pathCell);
     scriptsTableBody.appendChild(tr);
   }
+  updateShowMoreBtn("scripts");
 }
 
-async function loadEpisodes() {
-  const res = await fetch(`${API_BASE}/episodes`, { headers: authHeaders() });
-  const items = await res.json();
+function renderEpisodes() {
+  const state = listState.episodes;
+  const items = state.expanded ? state.items : state.items.slice(0, LIST_PREVIEW_COUNT);
   episodesTableBody.innerHTML = "";
   for (const item of items) {
     const tr = document.createElement("tr");
@@ -128,6 +168,28 @@ async function loadEpisodes() {
     tr.appendChild(pathCell);
     episodesTableBody.appendChild(tr);
   }
+  updateShowMoreBtn("episodes");
+}
+
+async function loadArticles() {
+  const res = await fetch(`${API_BASE}/articles`, { headers: authHeaders() });
+  listState.articles.items = await res.json();
+  listState.articles.expanded = false;
+  renderArticles();
+}
+
+async function loadScripts() {
+  const res = await fetch(`${API_BASE}/scripts`, { headers: authHeaders() });
+  listState.scripts.items = await res.json();
+  listState.scripts.expanded = false;
+  renderScripts();
+}
+
+async function loadEpisodes() {
+  const res = await fetch(`${API_BASE}/episodes`, { headers: authHeaders() });
+  listState.episodes.items = await res.json();
+  listState.episodes.expanded = false;
+  renderEpisodes();
 }
 
 function loadAllLists() {

@@ -91,6 +91,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .refresh-btn { width: 100%; margin-bottom: 0.25rem; }
 
+/* 「もっと見る」は一覧の主役ではないので、控えめな見た目の二次的なボタンにする */
+.show-more-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+.show-more-btn[hidden] { display: none; }
+
 .table-scroll {
   margin-top: 0.75rem;
   overflow-x: auto;
