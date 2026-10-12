@@ -1,168 +1,311 @@
+/* 管理画面のスタイル。ライト/ダークは端末の設定（prefers-color-scheme）に自動で追従する。 */
 :root {
   color-scheme: light dark;
-  --fg: #1a1a1a;
-  --bg: #ffffff;
-  --border: #d8d8d8;
-  --accent: #2f6fed;
-  --muted: #666;
-  --error: #c0392b;
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --border: #dce2ea;
+  --text: #18212b;
+  --muted: #55616f;
+  --primary: #1d5fd1;
+  --link: #1d5fd1;
+  --primary-soft: #e8f0fe;
+  --chip-ink: #16479f;
+  --subtle: #eef2f6;
+  --track: #dce2ea;
+  --input-border: #aeb8c4;
+  --caution-bg: #fff4e5;
+  --caution-border: #c2610c;
+  --caution-text: #8a3f05;
+  --st-idle: #9aa5b1;
+  --st-pending: #b7791f;
+  --st-ok: #12703f;
+  --st-error: #b42318;
+  --error-text: #b42318;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --fg: #e8e8e8;
-    --bg: #16181c;
-    --border: #3a3d42;
-    --muted: #9aa0a6;
+    --bg: #0f1318;
+    --surface: #171c23;
+    --border: #2c3541;
+    --text: #e6eaf0;
+    --muted: #a0abb8;
+    --primary: #2f6fe0;
+    --link: #8ab4ff;
+    --primary-soft: #1e2e4d;
+    --chip-ink: #a9c8ff;
+    --subtle: #222a34;
+    --track: #3a4452;
+    --input-border: #5a6676;
+    --caution-bg: #33220f;
+    --caution-border: #e08a3c;
+    --caution-text: #ffc48a;
+    --st-idle: #6f7b89;
+    --st-pending: #e0a030;
+    --st-ok: #3fb97a;
+    --st-error: #ff8a80;
+    --error-text: #ff8a80;
   }
 }
 
 * { box-sizing: border-box; }
 
+/* [hidden]属性は、display指定のあるクラスに上書きされてしまうため、明示的に優先させる */
+[hidden] { display: none !important; }
+
 body {
-  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
   margin: 0;
-  padding: 0 1rem 3rem;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   font-size: 16px;
+  line-height: 1.6;
 }
 
-header {
-  padding: 1.25rem 0 1rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1.25rem;
+h1, h2, p { margin: 0; }
+a { color: var(--link); }
+
+:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
 }
 
-h1 { font-size: 1.15rem; margin: 0 0 0.25rem; line-height: 1.4; }
-.sub { color: var(--muted); margin: 0; font-size: 0.85rem; }
-
-.panel {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-h2 { font-size: 1rem; margin-top: 0; }
-
-button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.7rem 1.1rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  min-height: 44px;
-}
-
-button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 0.75rem; }
-
-.step-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-.step-buttons button { width: 100%; }
-
-.run-status {
-  display: block;
-  margin-top: 0.6rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.log-area {
-  margin-top: 0.75rem;
-  background: rgba(127,127,127,0.08);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.75rem;
-  max-height: 320px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-all;
-  font-size: 0.8rem;
-  line-height: 1.5;
-}
-
-.refresh-btn { width: 100%; margin-bottom: 0.25rem; }
-
-/* 「もっと見る」は一覧の主役ではないので、控えめな見た目の二次的なボタンにする */
-.show-more-btn {
-  display: block;
-  width: 100%;
-  margin-top: 0.6rem;
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--border);
-}
-.show-more-btn[hidden] { display: none; }
-
-.table-scroll {
-  margin-top: 0.75rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.85rem; }
-th, td { text-align: left; padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
-th { color: var(--muted); font-weight: 600; }
-td.path-cell { white-space: normal; word-break: break-all; }
-audio { max-width: 240px; width: 100%; }
-.path-cell { font-size: 0.75rem; color: var(--muted); word-break: break-all; }
-
-/* スマホ幅では保存先（ローカルパス）列を隠し、再生ボタン等の表示領域を優先する */
-@media (max-width: 639px) {
-  .path-col, .path-cell { display: none; }
-  table { min-width: 0; }
-}
-
-/* ログイン画面 */
-.login-screen {
-  min-height: 100vh;
+/* ---------- ボタン共通 ---------- */
+.btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
-/* [hidden]属性はUAスタイルシートのdisplay:noneより、上のdisplay:flex指定の方が
-   author stylesheetとして優先されてしまうため、明示的に上書きする */
-.login-screen[hidden],
-.app-root[hidden] {
-  display: none;
-}
-.login-card {
-  width: 100%;
-  max-width: 320px;
-  border: 1px solid var(--border);
+.btn-lg { min-height: 56px; font-size: 16px; }
+.btn-primary { background: var(--primary); color: #ffffff; }
+.btn-outline { background: var(--surface); color: var(--link); border-color: var(--link); font-size: 15px; }
+.btn-subtle {
+  min-height: 44px;
+  padding: 0 14px;
   border-radius: 10px;
-  padding: 1.5rem;
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+}
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary);
+}
+.logo-lg { width: 56px; height: 56px; border-radius: 16px; }
+
+/* ---------- ログイン画面 ---------- */
+.login-screen {
+  min-height: 100vh;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
-.login-card h1 { font-size: 1.1rem; margin: 0; }
-.login-card input {
-  font-size: 1rem;
-  padding: 0.7rem 0.8rem;
+.login-brand { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.login-eyebrow { font-size: 13px; color: var(--muted); }
+.login-brand h1 { font-size: 24px; font-weight: 700; line-height: 1.4; }
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--fg);
-  min-height: 44px;
+  border-radius: 16px;
 }
-.login-error { color: var(--error); font-size: 0.85rem; margin: 0; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label { font-size: 14px; font-weight: 700; }
+.field input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 1.5px solid var(--input-border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 18px;
+}
+.login-error { color: var(--error-text); font-size: 14px; }
+.login-note { max-width: 400px; font-size: 12px; color: var(--muted); text-align: center; }
 
-/* 画面が広い場合はボタンを横並びに戻す */
-@media (min-width: 640px) {
-  body { padding: 0 1.5rem 3rem; }
-  h1 { font-size: 1.3rem; }
-  .step-buttons { flex-direction: row; flex-wrap: wrap; }
-  .step-buttons button { width: auto; }
-  .refresh-btn { width: auto; }
-  table { min-width: 0; }
+/* ---------- アプリ全体 ---------- */
+.app-header { background: var(--surface); border-bottom: 1px solid var(--border); }
+.app-header-inner {
+  max-width: 1120px;
+  min-height: 56px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.app-title { display: flex; flex-direction: column; min-width: 0; }
+.app-title h1 { font-size: 17px; font-weight: 700; line-height: 1.3; }
+.app-title span { font-size: 12px; color: var(--muted); }
+
+.app-main {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+/* スマホ幅では縦1列に積まれ、広い画面では左（操作）・右（履歴）の2列になる */
+.col-controls { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.col-history { flex: 2 1 480px; min-width: 0; }
+
+.intro { font-size: 13px; color: var(--muted); }
+.hint { margin-top: 4px; font-size: 13px; color: var(--muted); }
+
+.card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.card h2 { font-size: 16px; font-weight: 700; }
+
+.divider { height: 1px; margin: 4px 0; background: var(--border); }
+
+/* ---------- ステップ実行 ---------- */
+.step-btn {
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.step-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--link);
+  font-weight: 700;
+}
+.step-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.step-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
+.step-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.step-chevron { flex: none; color: var(--muted); }
+
+/* LINE送信は、実際に配信先へ届く操作なので、他と見た目を分けて押し間違いを防ぐ */
+.line-btn {
+  min-height: 72px;
+  border: 2px solid var(--caution-border);
+  background: var(--caution-bg);
+  color: var(--caution-text);
+}
+.line-btn .step-badge { background: var(--caution-border); color: #ffffff; }
+.line-btn .step-desc { color: var(--caution-text); }
+
+/* ---------- 実行状況 ---------- */
+.status-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--subtle);
+  font-size: 14px;
+}
+.dot { flex: none; width: 10px; height: 10px; margin-top: 8px; border-radius: 50%; background: var(--st-idle); }
+.dot[data-state="pending"] { background: var(--st-pending); }
+.dot[data-state="ok"] { background: var(--st-ok); }
+.dot[data-state="error"] { background: var(--st-error); }
+
+/* ---------- 生成済みデータ ---------- */
+.history-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.tabs { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--subtle); }
+.tab-btn {
+  flex: 1 1 0;
+  min-height: 44px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tab-btn.is-active { background: var(--surface); color: var(--link); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
+
+.item-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.item-card {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.item-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.item-info { display: flex; flex-direction: column; min-width: 0; }
+.item-when { font-size: 15px; font-weight: 700; }
+.item-size { font-size: 13px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 2px 10px; border-radius: 999px; background: var(--subtle); font-size: 12px; }
+.chip-accent { background: var(--primary-soft); color: var(--chip-ink); font-weight: 500; }
+.item-error { font-size: 13px; color: var(--error-text); }
+
+/* 音声カード: シークバーは、カードの横幅いっぱいに伸ばす（スマホでもPCでも同じ配置） */
+.audio-card { gap: 4px; }
+.play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+}
+.seek { display: block; width: 100%; height: 36px; margin: 0; accent-color: var(--link); cursor: pointer; }
+.time-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+
+.list-message { padding: 8px 0; font-size: 14px; color: var(--muted); text-align: center; }
+.list-message.is-error { color: var(--error-text); }

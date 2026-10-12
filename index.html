@@ -4,110 +4,127 @@
   <meta charset="UTF-8" />
   <title>株式情報 音声解説 - 管理画面</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
-  <div id="loginScreen" class="login-screen">
+  <div id="loginScreen" class="login-screen" hidden>
+    <div class="login-brand">
+      <span class="logo logo-lg" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </span>
+      <div>
+        <p class="login-eyebrow">株式情報 音声解説</p>
+        <h1>管理画面ログイン</h1>
+      </div>
+    </div>
+
     <form id="loginForm" class="login-card">
-      <h1>管理画面ログイン</h1>
-      <p class="hint">パスワードを入力してください</p>
-      <input id="passwordInput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="パスワード" />
-      <button type="submit">ログイン</button>
-      <p id="loginError" class="login-error" hidden></p>
+      <div class="field">
+        <label for="passwordInput">パスワード</label>
+        <input id="passwordInput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="パスワードを入力" />
+      </div>
+      <button id="loginBtn" type="submit" class="btn btn-primary btn-lg">ログイン</button>
+      <p id="loginError" class="login-error" role="alert" hidden></p>
     </form>
+
+    <p class="login-note">連続して入力を間違えると、しばらくの間ログインできなくなります。</p>
   </div>
 
   <div id="appRoot" class="app-root" hidden>
-    <header>
-      <h1>株式情報 音声解説 — 管理画面</h1>
-      <p class="sub">ボタンを押すとGitHub Actionsに実行を依頼します（完了まで数分かかります）</p>
+    <header class="app-header">
+      <div class="app-header-inner">
+        <span class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        </span>
+        <div class="app-title">
+          <h1>株式情報 音声解説</h1>
+          <span>管理画面</span>
+        </div>
+      </div>
     </header>
 
-    <main>
-      <section class="panel">
-        <h2>一連の実行</h2>
-        <p class="hint">記事収集→原稿作成→TTSを通しで実行します（各ステップの成果物も個別に保存されます）</p>
-        <button class="run-btn" data-action="run">一連の実行</button>
-      </section>
+    <main class="app-main">
+      <div class="col-controls">
+        <p class="intro">ボタンを押すとGitHub Actionsに実行を依頼します（完了まで数分かかります）。</p>
 
-      <section class="panel">
-        <h2>ステップ実行</h2>
-        <p class="hint">各ステップは独立して繰り返し実行できます。原稿作成は直近の記事収集結果を、TTSは直近の原稿を対象にします。LINE送信は直近の音声をアップロードし、実際に配信先へメッセージを送信します（「一連の実行」には含まれません。手動で押してください）。</p>
-        <div class="step-buttons">
-          <button class="run-btn" data-action="run/ingest">① 記事収集</button>
-          <button class="run-btn" data-action="run/script">② 原稿作成</button>
-          <button class="run-btn" data-action="run/tts">③ TTS</button>
-          <button class="run-btn" data-action="run/line">④ LINE送信</button>
+        <section class="card">
+          <div>
+            <h2>音声合成まで実行</h2>
+            <p class="hint">記事収集 → 原稿作成 → 音声合成を通しで実行します。LINE送信は含まれません。</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-lg run-btn" data-action="run">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#FFFFFF"/></svg>
+            <span>実行</span>
+          </button>
+        </section>
+
+        <section class="card">
+          <div>
+            <h2>ステップ実行</h2>
+            <p class="hint">各ステップは単独で何度でも実行できます。</p>
+          </div>
+
+          <button type="button" class="step-btn run-btn" data-action="run/ingest">
+            <span class="step-badge" aria-hidden="true">1</span>
+            <span class="step-text"><span class="step-title">記事収集</span><span class="step-desc">最新のニュース記事を取得して保存</span></span>
+            <svg class="step-chevron" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="step-btn run-btn" data-action="run/script">
+            <span class="step-badge" aria-hidden="true">2</span>
+            <span class="step-text"><span class="step-title">原稿作成</span><span class="step-desc">直近の記事から対話形式の原稿を生成</span></span>
+            <svg class="step-chevron" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="step-btn run-btn" data-action="run/tts">
+            <span class="step-badge" aria-hidden="true">3</span>
+            <span class="step-text"><span class="step-title">音声合成</span><span class="step-desc">直近の原稿を音声（mp3）にする</span></span>
+            <svg class="step-chevron" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+
+          <div class="divider"></div>
+
+          <button type="button" class="step-btn line-btn run-btn" data-action="run/line">
+            <span class="step-badge" aria-hidden="true">4</span>
+            <span class="step-text"><span class="step-title">LINE送信</span><span class="step-desc">直近の音声を、配信先に実際に送信します</span></span>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8-8-2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg>
+          </button>
+          <p class="hint">「音声合成まで実行」には含まれません。押すと配信先にLINEが届きます。</p>
+        </section>
+
+        <section class="card">
+          <h2>実行状況</h2>
+          <div class="status-box">
+            <span id="runStatusDot" class="dot" data-state="idle" aria-hidden="true"></span>
+            <span id="runStatus" role="status">まだ実行していません。</span>
+          </div>
+          <p class="hint">進捗はここには表示されません。数分待ってから右（スマホでは下）の一覧を更新するか、<a id="ghActionsLink" href="#" target="_blank" rel="noopener">GitHub Actions</a>で確認してください。</p>
+        </section>
+      </div>
+
+      <section class="card col-history">
+        <div class="history-head">
+          <h2>生成済みデータ</h2>
+          <button id="refreshBtn" type="button" class="btn btn-subtle">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>一覧を更新</span>
+          </button>
         </div>
-      </section>
 
-      <section class="panel">
-        <h2>実行状況</h2>
-        <p id="runStatus" class="run-status">まだ実行していません。</p>
-        <p class="hint">実行の進捗はここには表示されません。数分待ってから下の一覧を更新するか、<a id="ghActionsLink" href="#" target="_blank" rel="noopener">GitHub Actions</a>で確認してください。</p>
-      </section>
-
-      <section class="panel">
-        <h2>生成済み記事収集結果</h2>
-        <button class="refresh-btn" data-target="articles">一覧を更新</button>
-        <div class="table-scroll">
-          <table id="articlesTable">
-            <thead>
-              <tr>
-                <th>作成日時</th>
-                <th>記事数</th>
-                <th>サイズ</th>
-                <th class="path-col">保存先</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+        <div class="tabs" role="group" aria-label="表示するデータの種類">
+          <button type="button" class="tab-btn is-active" data-tab="audio" aria-pressed="true">音声</button>
+          <button type="button" class="tab-btn" data-tab="script" aria-pressed="false">原稿</button>
+          <button type="button" class="tab-btn" data-tab="article" aria-pressed="false">記事</button>
         </div>
-        <button class="show-more-btn" data-target="articles" hidden></button>
-      </section>
 
-      <section class="panel">
-        <h2>生成済み原稿</h2>
-        <button class="refresh-btn" data-target="scripts">一覧を更新</button>
-        <div class="table-scroll">
-          <table id="scriptsTable">
-            <thead>
-              <tr>
-                <th>作成日時</th>
-                <th>モード</th>
-                <th>記事数</th>
-                <th>発話数</th>
-                <th>サイズ</th>
-                <th class="path-col">保存先</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <button class="show-more-btn" data-target="scripts" hidden></button>
-      </section>
+        <ul id="list-audio" class="item-list"></ul>
+        <ul id="list-script" class="item-list" hidden></ul>
+        <ul id="list-article" class="item-list" hidden></ul>
 
-      <section class="panel">
-        <h2>生成済みエピソード（音声）</h2>
-        <button class="refresh-btn" data-target="episodes">一覧を更新</button>
-        <div class="table-scroll">
-          <table id="episodesTable">
-            <thead>
-              <tr>
-                <th>作成日時</th>
-                <th>サイズ</th>
-                <th>再生</th>
-                <th class="path-col">保存先</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <button class="show-more-btn" data-target="episodes" hidden></button>
+        <p id="listMessage" class="list-message" role="status" hidden></p>
+        <button id="showMoreBtn" type="button" class="btn btn-outline" hidden></button>
       </section>
     </main>
   </div>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
