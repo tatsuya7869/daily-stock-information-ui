@@ -272,6 +272,26 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
 }
 .tab-btn.is-active { background: var(--surface); color: var(--link); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
 
+/* 再生速度（音声タブのみ表示。選んだ速度はすべての音声に適用する） */
+.speed-control { display: flex; flex-direction: column; gap: 6px; }
+.speed-label { font-size: 13px; font-weight: 700; color: var(--muted); }
+.speed-options { display: flex; gap: 6px; }
+.speed-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.speed-btn.is-active { background: var(--primary-soft); border-color: var(--link); color: var(--link); }
+
 .item-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .item-card {
   padding: 12px;

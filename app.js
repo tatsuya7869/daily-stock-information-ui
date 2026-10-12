@@ -49,6 +49,8 @@ const runStatusDot = document.getElementById("runStatusDot");
 const ghActionsLink = document.getElementById("ghActionsLink");
 ghActionsLink.href = GITHUB_ACTIONS_URL;
 
+const speedControl = document.getElementById("speedControl");
+const speedBtns = document.querySelectorAll(".speed-btn[data-rate]");
 const refreshBtn = document.getElementById("refreshBtn");
 const tabBtns = document.querySelectorAll(".tab-btn[data-tab]");
 const showMoreBtn = document.getElementById("showMoreBtn");
@@ -167,6 +169,54 @@ const ICON_PAUSE = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden=
 
 const SEEK_STEPS = 1000; // シークバーの分解能（0〜1000）
 
+// 再生速度。画面で1つだけ選び、すべての音声に適用する。選んだ値は端末に記憶する。
+const ALLOWED_RATES = [1, 1.25, 1.5, 1.75, 2];
+const RATE_STORAGE_KEY = "playbackRate";
+
+function loadRate() {
+  try {
+    const saved = Number(localStorage.getItem(RATE_STORAGE_KEY));
+    return ALLOWED_RATES.includes(saved) ? saved : 1;
+  } catch {
+    return 1;
+  }
+}
+
+let playbackRate = loadRate();
+
+function applyRate(audio) {
+  // defaultPlaybackRateも設定する。load()し直したとき（長さの再取得時など）に、速度が1倍へ戻るのを防ぐ
+  audio.defaultPlaybackRate = playbackRate;
+  audio.playbackRate = playbackRate;
+  // 速くしても声が高くならないよう、音程を保つ（ブラウザごとの名称の違いに対応）
+  audio.preservesPitch = true;
+  audio.mozPreservesPitch = true;
+  audio.webkitPreservesPitch = true;
+}
+
+function updateSpeedUi() {
+  speedBtns.forEach((btn) => {
+    const selected = Number(btn.dataset.rate) === playbackRate;
+    btn.classList.toggle("is-active", selected);
+    btn.setAttribute("aria-pressed", String(selected));
+  });
+}
+
+function setRate(rate) {
+  if (!ALLOWED_RATES.includes(rate)) return;
+  playbackRate = rate;
+  try {
+    localStorage.setItem(RATE_STORAGE_KEY, String(rate));
+  } catch {
+    // 保存できない環境でも、この画面を開いている間は選んだ速度が有効
+  }
+  audioElements.forEach(applyRate); // 再生中の音声にも、すぐ反映する
+  updateSpeedUi();
+}
+
+speedBtns.forEach((btn) => btn.addEventListener("click", () => setRate(Number(btn.dataset.rate))));
+updateSpeedUi();
+
 let currentAudio = null; // 再生中の音声（同時に1つだけ再生する）
 let audioElements = []; // 一覧の再描画時に、読み込み中の音声を解放するための記録
 
@@ -204,6 +254,7 @@ function buildAudioCard(item) {
   const audio = new Audio();
   audio.preload = "metadata";
   audio.src = item.audioUrl;
+  applyRate(audio);
   audioElements.push(audio);
 
   const playBtn = el("button", "play-btn");
@@ -433,6 +484,7 @@ function selectTab(kind) {
     btn.setAttribute("aria-pressed", String(selected));
   });
   for (const [k, ul] of Object.entries(listEls)) ul.hidden = k !== kind;
+  speedControl.hidden = kind !== "audio";
   updateListChrome();
 }
 

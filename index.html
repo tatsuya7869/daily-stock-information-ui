@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>株式情報 音声解説 - 管理画面</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
   <div id="loginScreen" class="login-screen" hidden>
@@ -115,6 +115,17 @@
           <button type="button" class="tab-btn" data-tab="article" aria-pressed="false">記事</button>
         </div>
 
+        <div id="speedControl" class="speed-control" role="group" aria-label="再生速度">
+          <span class="speed-label">再生速度</span>
+          <div class="speed-options">
+            <button type="button" class="speed-btn" data-rate="1" aria-pressed="true">1.0倍</button>
+            <button type="button" class="speed-btn" data-rate="1.25" aria-pressed="false">1.25倍</button>
+            <button type="button" class="speed-btn" data-rate="1.5" aria-pressed="false">1.5倍</button>
+            <button type="button" class="speed-btn" data-rate="1.75" aria-pressed="false">1.75倍</button>
+            <button type="button" class="speed-btn" data-rate="2" aria-pressed="false">2.0倍</button>
+          </div>
+        </div>
+
         <ul id="list-audio" class="item-list"></ul>
         <ul id="list-script" class="item-list" hidden></ul>
         <ul id="list-article" class="item-list" hidden></ul>
@@ -125,6 +136,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
